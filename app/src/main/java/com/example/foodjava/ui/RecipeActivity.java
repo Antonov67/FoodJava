@@ -16,9 +16,12 @@ import android.widget.Toast;
 
 
 import com.example.foodjava.controller.Api;
+import com.example.foodjava.controller.ApiYandex;
 import com.example.foodjava.controller.RecipeAdapter;
 import com.example.foodjava.controller.RetrofitConnection;
+import com.example.foodjava.controller.RetrofitConnectionYandex;
 import com.example.foodjava.controller.Utils;
+import com.example.foodjava.model.LanguageResponse;
 import com.example.foodjava.model.MyResponse;
 import com.example.foodkotlin.R;
 import com.google.android.material.button.MaterialButton;
@@ -51,27 +54,49 @@ public class RecipeActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
 
         Api apiService = RetrofitConnection.getInstance().getRetrofit().create(Api.class);
+        ApiYandex apiYandex = RetrofitConnectionYandex.getInstance().getRetrofit().create(ApiYandex.class);
+
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Call<MyResponse> call = apiService.getRecipes(Utils.type, Utils.appID, Utils.appKey, searchField.getText().toString());
-                progressBar.setVisibility(View.VISIBLE);
-                call.enqueue(new Callback<MyResponse>() {
+                //определим язык введенного текста и переведем его на английский, чтобы сделать запрос
+                LanguageResponse languageResponse = new LanguageResponse();
+                Call<LanguageResponse> responseCall = apiYandex.getLanguageCode(Utils.token, searchField.getText().toString(), Utils.folderId);
+                responseCall.enqueue(new Callback<LanguageResponse>() {
                     @Override
-                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                    public void onResponse(Call<LanguageResponse> call, Response<LanguageResponse> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(RecipeActivity.this, response.body().languageCode, Toast.LENGTH_SHORT).show();
+                        }
 
-                        adapter = new RecipeAdapter(response.body());
-                        pager.setAdapter(adapter);
-                        progressBar.setVisibility(View.INVISIBLE);
-                        //Toast.makeText(RecipeActivity.this, response.body().hits.get(0).recipe.label + "калории: " + response.body().hits.get(0).recipe.calories + " " + response.body().hits.get(0).recipe.ingredientLines.toString() + " " + response.body().hits.get(0).recipe.co2EmissionsClass, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onFailure(Call<MyResponse> call, Throwable t) {
+                    public void onFailure(Call<LanguageResponse> call, Throwable t) {
                         Toast.makeText(RecipeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
+
+
+//                Call<MyResponse> call = apiService.getRecipes(Utils.type, Utils.appID, Utils.appKey, searchField.getText().toString());
+//                progressBar.setVisibility(View.VISIBLE);
+//                call.enqueue(new Callback<MyResponse>() {
+//                    @Override
+//                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+//
+//                        adapter = new RecipeAdapter(response.body());
+//                        pager.setAdapter(adapter);
+//                        progressBar.setVisibility(View.INVISIBLE);
+//                        //Toast.makeText(RecipeActivity.this, response.body().hits.get(0).recipe.label + "калории: " + response.body().hits.get(0).recipe.calories + " " + response.body().hits.get(0).recipe.ingredientLines.toString() + " " + response.body().hits.get(0).recipe.co2EmissionsClass, Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<MyResponse> call, Throwable t) {
+//                        Toast.makeText(RecipeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
             }
         });
 

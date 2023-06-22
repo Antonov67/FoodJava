@@ -24,15 +24,4 @@ public interface Api {
             @Query("app_key") String appKey,
             @Query("q") String query);
 
-    //методы для работы с Яндекс переводчиком
-
-    //определение языка исходного текста
-    @POST("/detect")
-    Call<LanguageResponse> getLanguageCode(@Query("text") String text, @Query("folderId") String folderId);
-
-    //перевод текста
-    @POST("2/translate")
-    Call<TranslateResponse> changePassword(@Header("Authorization") String token, @Body TranslateRequest request);
-
-
 }

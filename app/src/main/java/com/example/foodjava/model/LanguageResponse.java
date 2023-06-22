@@ -8,5 +8,4 @@ public class LanguageResponse {
     @SerializedName("languageCode")
     @Expose
     public String languageCode;
-
 }

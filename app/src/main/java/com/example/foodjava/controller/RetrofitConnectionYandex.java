@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitConnectionYandex {
 
-    private static final String BASE_URL = "https://translate.api.cloud.yandex.net/translate/v2";
+    private static final String BASE_URL = "https://translate.api.cloud.yandex.net";
     static Retrofit retrofit;
     static {
         retrofit = new Retrofit.Builder()

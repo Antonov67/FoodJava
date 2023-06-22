@@ -8,4 +8,5 @@ public class Recipe {
     public double calories;
     public List<String> ingredientLines;
     public String co2EmissionsClass;
+
 }
