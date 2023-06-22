@@ -1,6 +1,9 @@
 package com.example.foodjava.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
@@ -18,6 +21,7 @@ import com.example.foodjava.controller.RetrofitConnection;
 import com.example.foodjava.controller.Utils;
 import com.example.foodjava.model.MyResponse;
 import com.example.foodkotlin.R;
+import com.google.android.material.button.MaterialButton;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +33,7 @@ public class RecipeActivity extends AppCompatActivity {
     EditText searchField;
     RecipeAdapter adapter;
     ProgressBar progressBar;
+    MaterialButton searchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,27 +42,20 @@ public class RecipeActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         pager = findViewById(R.id.pager);
+        searchButton = findViewById(R.id.search_button);
+        DividerItemDecoration itemDecorator = new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL);
+        itemDecorator.setDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.item_decorator));
+        pager.addItemDecoration(itemDecorator);
         searchField = findViewById(R.id.search_field);
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
         Api apiService = RetrofitConnection.getInstance().getRetrofit().create(Api.class);
 
-
-        searchField.addTextChangedListener(new TextWatcher() {
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                Call<MyResponse> call = apiService.getRecipes(Utils.type, Utils.appID, Utils.appKey, editable.toString());
+            public void onClick(View view) {
+                Call<MyResponse> call = apiService.getRecipes(Utils.type, Utils.appID, Utils.appKey, searchField.getText().toString());
                 progressBar.setVisibility(View.VISIBLE);
                 call.enqueue(new Callback<MyResponse>() {
                     @Override
@@ -76,11 +74,6 @@ public class RecipeActivity extends AppCompatActivity {
                 });
             }
         });
-
-
-
-
-
 
     }
 }

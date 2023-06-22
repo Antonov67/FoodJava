@@ -19,6 +19,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.Onboarding
     private MyResponse onboardingItems;
 
     public RecipeAdapter(MyResponse onboardingItems) {
+
         this.onboardingItems = onboardingItems;
     }
 
