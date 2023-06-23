@@ -23,8 +23,13 @@ import com.example.foodjava.controller.RetrofitConnectionYandex;
 import com.example.foodjava.controller.Utils;
 import com.example.foodjava.model.LanguageResponse;
 import com.example.foodjava.model.MyResponse;
+import com.example.foodjava.model.TranslateRequest;
+import com.example.foodjava.model.TranslateResponse;
 import com.example.foodkotlin.R;
 import com.google.android.material.button.MaterialButton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,6 +42,11 @@ public class RecipeActivity extends AppCompatActivity {
     RecipeAdapter adapter;
     ProgressBar progressBar;
     MaterialButton searchButton;
+
+    String sourceLanguage = "ru"; // язык ввода по умолчанию, позже мы его определим
+    List<String> list = new ArrayList();
+    String translatedQueryText = "";  //переведенный на английский текст запроса
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +63,7 @@ public class RecipeActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
-        Api apiService = RetrofitConnection.getInstance().getRetrofit().create(Api.class);
+
         ApiYandex apiYandex = RetrofitConnectionYandex.getInstance().getRetrofit().create(ApiYandex.class);
 
 
@@ -67,7 +77,53 @@ public class RecipeActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<LanguageResponse> call, Response<LanguageResponse> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(RecipeActivity.this, response.body().languageCode, Toast.LENGTH_SHORT).show();
+                            sourceLanguage = response.body().languageCode; //запишем определившийся язык ввода в переменную
+                            //Toast.makeText(RecipeActivity.this, response.body().languageCode, Toast.LENGTH_SHORT).show();
+
+                            //переведем введенный текст на английский, чтобы позже использовать его для запроса рецепта
+                            //Создадим запрос
+
+                            list.clear();
+                            list.add(searchField.getText().toString());
+                            TranslateRequest translateRequest = new TranslateRequest(sourceLanguage, list);
+                            Call<TranslateResponse> translateResponseCall = apiYandex.translate(Utils.token, translateRequest);
+                            translateResponseCall.enqueue(new Callback<TranslateResponse>() {
+                                @Override
+                                public void onResponse(Call<TranslateResponse> call, Response<TranslateResponse> response) {
+                                    if (response.isSuccessful()){
+                                        translatedQueryText = response.body().translations.get(0).text; //заберем переведенный на английский текст запроса
+                                        //Toast.makeText(RecipeActivity.this, response.body().translations.get(0).text, Toast.LENGTH_SHORT).show();
+
+                                        //получим рецепты по переведенному на ангилйский запросу
+                                        Api apiService = RetrofitConnection.getInstance().getRetrofit().create(Api.class);
+                                        Call<MyResponse> call2 = apiService.getRecipes(Utils.type, Utils.appID, Utils.appKey, translatedQueryText);
+                                        progressBar.setVisibility(View.VISIBLE);
+                                        call2.enqueue(new Callback<MyResponse>() {
+                                            @Override
+                                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+
+                                                adapter = new RecipeAdapter(response.body());
+                                                pager.setAdapter(adapter);
+                                                progressBar.setVisibility(View.INVISIBLE);
+                                                //Toast.makeText(RecipeActivity.this, response.body().hits.get(0).recipe.label + "калории: " + response.body().hits.get(0).recipe.calories + " " + response.body().hits.get(0).recipe.ingredientLines.toString() + " " + response.body().hits.get(0).recipe.co2EmissionsClass, Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<MyResponse> call, Throwable t) {
+                                                Toast.makeText(RecipeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<TranslateResponse> call, Throwable t) {
+
+                                }
+                            });
+
+
+
                         }
 
                     }
@@ -80,23 +136,8 @@ public class RecipeActivity extends AppCompatActivity {
 
 
 
-//                Call<MyResponse> call = apiService.getRecipes(Utils.type, Utils.appID, Utils.appKey, searchField.getText().toString());
-//                progressBar.setVisibility(View.VISIBLE);
-//                call.enqueue(new Callback<MyResponse>() {
-//                    @Override
-//                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-//
-//                        adapter = new RecipeAdapter(response.body());
-//                        pager.setAdapter(adapter);
-//                        progressBar.setVisibility(View.INVISIBLE);
-//                        //Toast.makeText(RecipeActivity.this, response.body().hits.get(0).recipe.label + "калории: " + response.body().hits.get(0).recipe.calories + " " + response.body().hits.get(0).recipe.ingredientLines.toString() + " " + response.body().hits.get(0).recipe.co2EmissionsClass, Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<MyResponse> call, Throwable t) {
-//                        Toast.makeText(RecipeActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
+
+
             }
         });
 

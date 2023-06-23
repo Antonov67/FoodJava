@@ -1,5 +1,6 @@
-package com.example.foodjava.controller;
+package com.example.foodjava.model;
 
+import com.example.foodjava.controller.Utils;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
