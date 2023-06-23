@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Recipe {
     public String image;
+    public String url;
     public String label;
     public double calories;
     public List<String> ingredientLines;

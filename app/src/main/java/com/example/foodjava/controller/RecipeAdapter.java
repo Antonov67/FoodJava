@@ -48,6 +48,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.Onboarding
         private TextView textOpisanie;
         private TextView textCalorii;
         private TextView textRating;
+        private TextView textUrl;
         private ImageView image;
 
         OnboardingViewHolder(@NonNull View itemView) {
@@ -57,6 +58,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.Onboarding
             textCalorii = itemView.findViewById(R.id.text_calorii);
             textRating = itemView.findViewById(R.id.text_rating);
             image = itemView.findViewById(R.id.image);
+            textUrl = itemView.findViewById(R.id.text_url);
         }
 
         void setOnboardingData(Recipe recipe) {
@@ -67,6 +69,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.Onboarding
                 stringBuilder.append(s).append("\n");
             }
             textOpisanie.setText(stringBuilder);
+            textUrl.setText("url:\n" + recipe.url);
             textCalorii.setText("калории:\n " + recipe.calories);
             textRating.setText("рейтинг: \n" + recipe.co2EmissionsClass);
             //здесь нужна библиотека Picasso для загрузки картинки по url в наш imageView
