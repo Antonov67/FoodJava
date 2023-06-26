@@ -16,7 +16,7 @@
         android:layout_margin="10dp"
         android:gravity="center"
         android:inputType="textPersonName"
-        android:hint="введите ключевые слова"
+        android:hint="введите ключевые слова на любом языке"
         tools:layout_editor_absoluteX="105dp"
         tools:layout_editor_absoluteY="37dp" />
 
