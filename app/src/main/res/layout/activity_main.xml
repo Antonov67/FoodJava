@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
+        android:textStyle="italic"
         android:text="поиск рецептов по ключевым словам" />
 
     <LinearLayout
@@ -80,6 +81,7 @@
             android:id="@+id/imageView4"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_margin="3dp"
             android:layout_gravity="center_vertical"
             app:srcCompat="@drawable/ya" />
 
@@ -96,7 +98,6 @@
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button"
         android:drawableLeft="@drawable/hot_dog"
-        android:background="@color/white"
         android:padding="5dp"
         android:layout_width="wrap_content"
         android:textColor="@color/black"
